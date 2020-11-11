@@ -28,6 +28,8 @@ source-repository head
 library
   exposed-modules:
       Lib
+      Math
+      Pythagore
   other-modules:
       Paths_haskell_training
   hs-source-dirs:

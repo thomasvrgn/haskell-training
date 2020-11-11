@@ -1,6 +1,6 @@
 module Main where
+import Math
 
-import Lib
-
-main :: IO ()
-main = someFunc
+main :: IO()
+main = do
+  print $ pythagore (3, 4, 5)
