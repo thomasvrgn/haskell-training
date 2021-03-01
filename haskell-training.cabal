@@ -30,6 +30,7 @@ library
       Lib
       Math
       Pythagore
+      Complex
   other-modules:
       Paths_haskell_training
   hs-source-dirs:
