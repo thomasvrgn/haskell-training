@@ -1,2 +1,11 @@
 .stack-work/
 *~
+
+# Idea folders and files
+*.iml
+.idea
+
+# Haskell output
+Main
+*.hi
+*.o
