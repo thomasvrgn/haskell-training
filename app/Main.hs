@@ -58,13 +58,6 @@ phase (Complex a b) = atan2 b a
 realPart :: (Num a) => Complex a -> a
 realPart (Complex a _) = a
 
-truncate' :: (Num a, Integral a, RealFrac a) => a -> Integer -> a
-truncate' x n = (fromIntegral (floor (x * t))) / t
-    where t = 10^n
-
-cmap :: (Num a) => (a -> a) -> Complex a -> Complex a
-cmap f (Complex a b) = (Complex (f a) (f b))
-
 imaginaryPart :: (Num a) => Complex a -> a
 imaginaryPart (Complex a _) = a
 
@@ -75,5 +68,4 @@ main = do
   print (cm1 ** cm2)
   print (cm1 ** 2)
   print (cm1 * cm1)
-  print $ cmap (\x -> truncate x 10) (cm1)
 
