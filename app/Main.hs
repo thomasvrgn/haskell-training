@@ -11,3 +11,10 @@ main = do
   putStrLn $ "Subtraction: " ++ show (complex1 - complex2)
   putStrLn $ "Addition: " ++ show (complex1 + complex2)
   putStrLn $ "Division: " ++ show (complex1 / complex2)
+
+  putStrLn $ show (complex1 == complex2)
+  putStrLn $ show ((Complex 1 6) == (Complex 1 6))
+  putStrLn $ show ((Complex 1 6) == (Complex 1 4))
+
+  putStrLn $ show ((Complex 1 6) /= (Complex 1 6))
+  putStrLn $ show ((Complex 1 6) /= (Complex 1 4))
