@@ -11,6 +11,10 @@ instance (Num a, Fractional a, RealFloat a) => Fractional (Complex a) where
     where k = c^2 + d^2
   fromRational a = Complex (fromRational a) 0
 
+instance (Num a, Eq a) => Eq (Complex a) where
+  (Complex a b) == (Complex c d) = a == c && b == d
+  (Complex a b) /= (Complex c d) = a /= c || b /= d
+
 instance (RealFloat a) => Floating (Complex a) where
   pi = Complex pi 0
   exp (Complex a b) = Complex (xp * cos b) (xp * sin b)
@@ -18,6 +22,7 @@ instance (RealFloat a) => Floating (Complex a) where
   log z = Complex (log (realPart (abs z))) (phase z)
 
   a ** b = exp (log a * b)
+  sqrt a = complexRoot a 2
 
   sin (Complex a b) = Complex (sin a * cosh b) (cos a * sinh b)
   cos (Complex a b) = Complex (cos a * cosh b) (- sin a * sinh b)
@@ -64,3 +69,8 @@ realPart (Complex a _) = a
 
 imaginaryPart :: (Num a) => Complex a -> a
 imaginaryPart (Complex a _) = a
+
+complexRoot :: (Num a, Fractional a, RealFloat a) => Complex a -> a -> Complex a
+complexRoot z n | n == 0 = 1
+                | n == 1 = z
+                | otherwise = z**(Complex (1/n) 0)
