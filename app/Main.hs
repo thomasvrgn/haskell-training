@@ -52,6 +52,9 @@ instance (RealFloat a) => Num (Complex a) where
   signum (Complex a b) = z / (abs z)
     where z = (Complex a b)
 
+non :: (Num a) => Complex a -> Complex a
+non (Complex a b) = (Complex a (-b))
+
 phase :: (RealFloat a) => Complex a -> a
 phase (Complex a b) = atan2 b a
 
