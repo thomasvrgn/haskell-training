@@ -1,5 +1,6 @@
 .stack-work/
 *~
+dist-newstyle
 
 # Idea folders and files
 *.iml
