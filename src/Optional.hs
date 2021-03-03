@@ -5,5 +5,9 @@ module Optional where
     show Undefined = "Undefined"
     show (Ok a) = show a
 
+  instance Functor Optional where
+    fmap f Undefined = Undefined
+    fmap f (Ok a) = (Ok (f a))
+
   getValue :: Optional a -> a
   getValue (Ok a) = a
