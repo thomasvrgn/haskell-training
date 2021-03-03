@@ -8,3 +8,4 @@ main = do
   print $ getValue test
   print $ realPart (getValue test)
 
+  print $ fmap (++"World") (Ok "Hello ")
