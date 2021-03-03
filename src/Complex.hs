@@ -3,8 +3,17 @@ module Complex where
 data Complex a where
   Complex :: (Num a) => a -> a -> Complex a
 
-instance (Show a) => Show (Complex a) where
-  show (Complex a b) = show a ++ " + " ++ show b ++ "i"
+instance (Show a, Ord a) => Show (Complex a) where
+  show (Complex a b) =
+     (if a /= 0 then show a else "")
+     ++
+     (if b /= 0 then
+       if b > 0 then
+         if a /= 0 then " + " ++ show b ++ "i" else show b ++ "i"
+       else
+         if a == 0 then "-" ++ show (abs b) ++ "i" else " - " ++ show (abs b) ++ "i"
+     else
+      "")
 
 instance (Num a, Fractional a, RealFloat a) => Fractional (Complex a) where
   (Complex a b) / (Complex c d) = (Complex ((a*c + b*d) / k) ((b*c - a*d) / k))
@@ -21,7 +30,10 @@ instance (RealFloat a) => Floating (Complex a) where
     where xp = exp a
   log z = Complex (log (realPart (abs z))) (phase z)
 
-  a ** b = exp (log a * b)
+  a ** b | (realPart b) == 1 = a
+         | (realPart b) == 0 = 1
+         | otherwise = exp (log a * b)
+
   sqrt a = complexRoot a 2
 
   sin (Complex a b) = Complex (sin a * cosh b) (cos a * sinh b)
@@ -74,3 +86,6 @@ complexRoot :: (Num a, Fractional a, RealFloat a) => Complex a -> a -> Complex a
 complexRoot z n | n == 0 = 1
                 | n == 1 = z
                 | otherwise = z**(Complex (1/n) 0)
+
+cmap :: (Num a) => (a -> a) -> Complex a -> Complex a
+cmap f (Complex a b) = (Complex (f a) (f b))
