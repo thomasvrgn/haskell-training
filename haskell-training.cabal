@@ -32,6 +32,7 @@ library
       Pythagore
       Complex
       Optional
+      Quaternion
   other-modules:
       Paths_haskell_training
   hs-source-dirs:
