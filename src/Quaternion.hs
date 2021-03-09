@@ -19,6 +19,9 @@ instance (RealFloat a) => Num (Quaternion a) where
 norm :: (Num a, Floating a) => Quaternion a -> a
 norm (Quaternion a b c d) = (a**2) + (b**2) + (c**2) + (d**2)
 
+non :: (Num a) => Quaternion a -> Quaternion a
+non (Quaternion a b c d) = Quaternion a (-b) (-c) (-d)
+
 -- a => a * a' - b * b' - c * c' - d * d',
 -- bi => a * b' + b * a' + c * d' - d * c',
 -- cj => a * c' - b * d' + c * a' + d * b',
