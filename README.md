@@ -4,6 +4,7 @@ Here are the main categories in chronological order:
 - [Simple Pythagore formula](src/Pythagore.hs) *11/11/2020*
 - [Complex implementation](src/Complex.hs) *03/02/2020*
 - [Optional implementation](src/Complex.hs) *03/03/2020*
+- [Quaternion implementation](src/Quaternion.hs) *03/09/2020*
 
 ### Why did I decide to learn Haskell
 So I decided to learn the Haskell for possible future research study needs. 
