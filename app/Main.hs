@@ -2,6 +2,6 @@ import Tree
 
 main :: IO()
 main = do
-  let tree = Node 4 (Node 5 Leaf)
+  let tree = Node [(Item 5), (Node [(Item 1)])]
   print tree
-  print $ fmap (+5) tree
+  print $ (*) <*> (+2) <$> tree
