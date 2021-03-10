@@ -2,6 +2,6 @@ import Tree
 
 main :: IO()
 main = do
-  let tree = Node [(Item 5), (Node [(Item 1)])]
+  let tree = Node [Leaf 5, Node [Leaf 1]]
   print tree
-  print $ pure (+) <*> (Node [Item 4, Item 5]) <*> tree
+  print $ pure (+) <*> Node [Leaf 4, Leaf 5] <*> tree
