@@ -1,6 +1,6 @@
 module Tree where
-  data Tree a = Leaf | Node a (Tree a) deriving (Show)
+  data Tree a = Node [(Tree a)] | Item a deriving (Show)
 
   instance Functor Tree where
-    fmap f Leaf = Leaf
-    fmap f (Node a list) = Node (f a) (fmap f list)
+    fmap f (Item a) = Item (f a)
+    fmap f (Node list) = Node (map (fmap f) list)
