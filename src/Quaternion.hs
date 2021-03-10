@@ -20,11 +20,10 @@ instance (RealFloat a) => Num (Quaternion a) where
     Quaternion (a - a') (b - b') (c - c') (d - d')
 
   (Quaternion a b c d) * (Quaternion a' b' c' d') =
-    Quaternion
-      (a * a' - b * b' - c * c' - d * d')
-      (a * b' + b * a' + c * d' - d * c')
-      (a * c' - b * d' + c * a' + d * b')
-      (a * d' + b * c' - c * b' + d * a')
+    Quaternion (a * a' - b * b' - c * c' - d * d')
+               (a * b' + b * a' + c * d' - d * c')
+               (a * c' - b * d' + c * a' + d * b')
+               (a * d' + b * c' - c * b' + d * a')
 
   abs z = Quaternion (sqrt (norm z)) 0 0 0
   fromInteger a = Quaternion (fromInteger a) 0 0 0
