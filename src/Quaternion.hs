@@ -12,6 +12,8 @@ module Quaternion where
       where
         zNorm = norm z
 
+    fromRational a = Quaternion (fromRational a) 0 0 0
+
   instance (RealFloat a) => Num (Quaternion a) where
     (Quaternion a b c d) + (Quaternion a' b' c' d') =
       Quaternion (a + a') (b + b') (c + c') (d + d')
@@ -27,6 +29,7 @@ module Quaternion where
 
     abs z = Quaternion (sqrt (norm z)) 0 0 0
     fromInteger a = Quaternion (fromInteger a) 0 0 0
+    signum z = z / abs z
 
   norm :: (Num a, Floating a) => Quaternion a -> a
   norm (Quaternion a b c d) = (a**2) + (b**2) + (c**2) + (d**2)
