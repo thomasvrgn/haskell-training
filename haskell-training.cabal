@@ -33,6 +33,7 @@ library
       Complex
       Optional
       Quaternion
+      Tree
   other-modules:
       Paths_haskell_training
   hs-source-dirs:
