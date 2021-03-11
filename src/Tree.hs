@@ -14,3 +14,6 @@ module Tree where
     return = Leaf
     Leaf item >>= f = f item
     Node list >>= f = Node [ el >>= f | el <- list ]
+
+  class TreeApplication f where
+    (>>>) :: f a -> (a -> b) -> f b
