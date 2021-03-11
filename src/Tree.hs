@@ -9,3 +9,8 @@ module Tree where
     pure = Leaf
     (Leaf list) <*> something = fmap list something
     (Node list) <*> something = Node [ el <*> something | el <- list ]
+
+  instance Monad Tree where
+    return = Leaf
+    Leaf item >>= f = f item
+    Node list >>= f = Node [ el >>= f | el <- list ]
