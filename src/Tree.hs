@@ -17,3 +17,7 @@ module Tree where
 
   class TreeApplication f where
     (>>>) :: f a -> (a -> b) -> f b
+
+  instance TreeApplication Tree where
+    Leaf item >>> f = Leaf (f item)
+    Node list >>> f = Node [ el >>> f | el <- list ]
