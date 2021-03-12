@@ -1,11 +1,10 @@
 {-# LANGUAGE GADTs, StandaloneDeriving #-}
 module Quaternion where
-  data Quaternion a = Quaternion a a a a
+  data Quaternion a where
+    Quaternion :: (Num a) => a -> a -> a -> a -> Quaternion a
 
   deriving instance (Show a) => Show (Quaternion a)
-
-  instance Functor Quaternion where
-    fmap f (Quaternion a b c d) = Quaternion (f a) (f b) (f c) (f d)
+  deriving instance (Eq a) => Eq (Quaternion a)
 
   instance (RealFloat a, Num a, Fractional a) => Fractional (Quaternion a) where
     (Quaternion a b c d) / z@(Quaternion a' b' c' d') =
