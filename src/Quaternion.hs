@@ -16,6 +16,17 @@ module Quaternion where
 
     fromRational a = Quaternion (fromRational a) 0 0 0
 
+  instance RealFloat a => Floating (Quaternion a) where
+    pi = (Quaternion pi 0 0 0)
+
+    exp q@(Quaternion a b c d) =
+      (Quaternion (exp a) 0 0 0) * (cosV + (v / normV) * sinV)
+      where normV = abs v
+            v = Quaternion 0 b c d
+            realNormV = sqrt (norm v)
+            cosV = (Quaternion (cos realNormV) 0 0 0)
+            sinV = (Quaternion (sin realNormV) 0 0 0)
+
   instance (RealFloat a) => Num (Quaternion a) where
     (Quaternion a b c d) + (Quaternion a' b' c' d') =
       Quaternion (a + a') (b + b') (c + c') (d + d')
