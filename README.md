@@ -1,7 +1,7 @@
 # Haskell training
 You will find on this repository all my trainings on the Haskell programming language.
 Here are the main categories in chronological order:
-- [Simple Pythagore formula](src/Pythagore.hs) *11/11/2020*
+- [Triangle module](src/Pythagore.hs) *11/11/2020*
 - [Complex implementation](src/Complex.hs) *03/02/2021*
 - [Optional implementation](src/Complex.hs) *03/03/2021*
 - [Quaternion implementation](src/Quaternion.hs) *03/09/2021*
