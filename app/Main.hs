@@ -1,10 +1,32 @@
 import Tree
 import Quaternion
 
-main :: IO()
+newtype Value a = Value { getValue :: a }
+  deriving (Show)
+
+instance Num a => Semigroup (Value a) where
+  Value x <> Value y = Value (x + y)
+
+instance Num a => Monoid (Value a) where
+  mempty = Value 0
+  Value x `mappend` Value y = Value (x + y)
+
+
+evalPolish :: (Num a, Read a, Fractional a) => String -> a
+evalPolish list = (head . foldl processItem [] . words) list
+  where processItem (x:y:ys) "+" = (x + y):ys
+        processItem (x:y:ys) "-" = (y - x):ys
+        processItem (x:y:ys) "*" = (x * y):ys
+        processItem (x:y:ys) "/" = (x / y):ys
+        processItem xs number = read number:xs
+
 main = do
-  let tree = Node [Leaf (Quaternion 7 5 6 4), Node [Leaf (Quaternion 0 1 2 3), Leaf (Quaternion 4 5 6 7)]]
-  print tree
-  print $ pure exp <*> pure (Quaternion 1 2 3 4) <$> tree
-  print $ exp (Quaternion 0 1 2 3)
-  print $ (+5) <$> (Quaternion 0 1 2 3)
+  print $ evalPolish "5 3 -"
+  print $ "test"
+
+  let val = Value 5
+  let val1 = Value 10
+  print $ getValue val
+  print $ val `mappend` val1
+
+
