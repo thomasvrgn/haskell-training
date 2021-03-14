@@ -1,6 +1,7 @@
 import Tree
 import Quaternion
 import Addition
+import Product
 
 evalPolish :: (Num a, Read a, Fractional a) => String -> a
 evalPolish list = (head . foldl processItem [] . words) list
@@ -12,11 +13,4 @@ evalPolish list = (head . foldl processItem [] . words) list
 
 main = do
   print "test"
-  print $ Addition 5 + Addition 5
-  print $ Addition 5 * Addition 4
-  print $ Addition 2 - Addition 5
-  print $ abs (Addition (-5))
-  print "test"
-  let text = 54 :: (Num a) => a
-  print $ (+) <*> pure 5 <$> Addition 41
-  print $ Addition 41 >>= (+5)
+  print $ Product 4 * Product 5
