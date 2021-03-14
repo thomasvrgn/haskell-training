@@ -13,6 +13,17 @@ instance (Num a, Enum a, Ord a) => Num (Addition a) where
                       | x == 0 = 0
                       | x > 0 = 1
 
+instance Functor Addition where
+  fmap f (Addition x) = (Addition (f x))
+
+instance Applicative Addition where
+  pure = Addition
+  (Addition f) <*> x = fmap f x
+
+instance Monad Addition where
+  return = Addition
+  Addition x >>= f = f x
+
 evalPolish :: (Num a, Read a, Fractional a) => String -> a
 evalPolish list = (head . foldl processItem [] . words) list
   where processItem (x:y:ys) "+" = (x + y):ys
@@ -28,3 +39,5 @@ main = do
   print $ Addition 2 - Addition 5
   print $ abs (Addition (-5))
   print "test"
+  print $ (+) <*> pure 5 <$> Addition 41
+  print $ Addition 41 >>= (+5)
