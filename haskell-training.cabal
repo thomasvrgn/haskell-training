@@ -35,6 +35,7 @@ library
       Quaternion
       Tree
       Groups
+      Product
       Addition
   other-modules:
       Paths_haskell_training
