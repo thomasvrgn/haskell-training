@@ -1,4 +1,4 @@
-module Lib
+module Maths.Lib
     ( someFunc
     ) where
 

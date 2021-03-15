@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs, StandaloneDeriving #-}
-module Quaternion where
+module Complex.Quaternion where
   data Quaternion a where
     Quaternion :: (Num a) => a -> a -> a -> a -> Quaternion a
 

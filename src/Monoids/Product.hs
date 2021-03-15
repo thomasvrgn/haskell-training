@@ -1,5 +1,5 @@
-module Product (module Groups) where
-  import Groups hiding (Addition)
+module Monoids.Product (module Monoids.Groups) where
+  import Monoids.Groups hiding (Addition)
 
   instance (Num a, Ord a) => Num (Product a) where
     (*) = (<>)

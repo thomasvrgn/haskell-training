@@ -1,5 +1,5 @@
-module Addition (module Groups) where
-  import Groups hiding (Product)
+module Monoids.Addition (module Monoids.Groups) where
+  import Monoids.Groups hiding (Product)
   instance (Num a, Enum a, Ord a) => Num (Addition a) where
     (+) = (<>)
     x * (Addition y) = foldl (+) 0 [ x | _ <- [1..y] ]

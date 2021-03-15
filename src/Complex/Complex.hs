@@ -1,5 +1,5 @@
 {-# LANGUAGE GADTs #-}
-module Complex where
+module Complex.Complex where
 data Complex a where
   Complex :: (Num a) => a -> a -> Complex a
 

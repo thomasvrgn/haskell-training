@@ -1,4 +1,4 @@
-module Groups where
+module Monoids.Groups where
   newtype Addition a = Addition { getAddition :: a }
     deriving (Show)
   newtype Product a = Product { getProduct :: a }
