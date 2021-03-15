@@ -27,16 +27,16 @@ source-repository head
 
 library
   exposed-modules:
-      Lib
-      Math
-      Pythagore
-      Complex
+      Maths.Lib
+      Maths.Math
+      Maths.Pythagore
+      Complex.Complex
       Optional
-      Quaternion
+      Complex.Quaternion
       Tree
-      Groups
-      Product
-      Addition
+      Monoids.Groups
+      Monoids.Product
+      Monoids.Addition
   other-modules:
       Paths_haskell_training
   hs-source-dirs:
