@@ -30,13 +30,18 @@ library
       Maths.Lib
       Maths.Math
       Maths.Pythagore
+
       Complex.Complex
-      Optional
       Complex.Quaternion
-      Tree
+
       Monoids.Groups
       Monoids.Product
       Monoids.Addition
+      Semigroups.AntiCommutative
+
+      Optional
+      Tree
+
   other-modules:
       Paths_haskell_training
   hs-source-dirs:
