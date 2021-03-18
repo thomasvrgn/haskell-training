@@ -4,7 +4,7 @@ import Monoids.Addition
 import Monoids.Product
 import Control.Monad (unless)
 import Semigroups.AntiCommutative
-import Algebra.Ring hiding ((*))
+import Control.Monad.State.Lazy
 
 sqrt' :: (Num a, Eq a, Floating a) => a -> a -> a
 sqrt' dec 0 = 1
@@ -35,8 +35,26 @@ instance (Show a) => Show (Optional a) where
 instance (Semigroup a) => Semigroup (Optional a) where
   Ok a <> Ok b = Ok (a <> b)
 
+data User = User { name :: String, age :: Int }
+  deriving (Show)
+
+updateUser :: String -> State User User
+updateUser newUser = do
+  usr <- get
+  let _age = age usr
+  put $ usr { name = newUser, age = _age }
+  return usr
+
+updateAge :: Int -> State User User
+updateAge _age = do
+  usr <- get
+  put $ usr { name = name usr, age = _age }
+  return usr
+
 main = do
-  let opt = Ok (Sum 7)
-  print opt
-  (print . getSum . getValue) opt
-  (print . getSum . getValue) (opt <> (Ok (Sum 7)))
+  let user = User { name = "Thomas", age = 14 }
+  print user
+  let result = (snd . runState (updateUser "Noe")) user
+  print result
+  let result2 = (snd . runState (updateAge 15)) result
+  print result2
