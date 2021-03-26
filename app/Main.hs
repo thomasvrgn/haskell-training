@@ -8,11 +8,10 @@ import Semigroups.AntiCommutative
 import Control.Monad.State.Lazy
 import System.Environment
 import System.IO
+import Optional
 
 data User = User { name :: String, age :: Integer }
   deriving (Show, Eq)
-
-data Optional a = Undefined | Optional { getValue :: a }
 
 input :: String -> IO String
 input str = do
@@ -20,7 +19,7 @@ input str = do
   hFlush stdout
   getLine
 
-split :: Eq a => a -> [a] -> [[a]]
+split :: Char -> String -> [String]
 split d [] = []
 split d s = x : split d (drop 1 y)
   where (x,y) = span (/= d) s
@@ -30,19 +29,18 @@ cli Undefined = do
   putStrLn "Création de l'utilisateur..."
   username :: String <- input "Nom d'utilisateur: "
   age :: Integer <- read <$> input "Age: "
-  cli (Optional User { name = username, age = age })
+  cli (Ok User { name = username, age = age })
 
-cli (Optional user) = do
+cli (Ok user) = do
   res <- input ">>> "
   let command = takeWhile (/= ' ') res
   let args = drop 1 $ dropWhile (/= ' ') res
-  let [username, age] = split ' ' args
+  let (username, age) = let [username, age] = split ' ' args in (username, read age :: Integer)
 
   case command of
-    "welcome" -> do
-      welcome user
-      cli (Optional user)
-    "modify" -> cli (Optional (update username (read age :: Integer)))
+    "welcome" -> welcome user >> cli (Ok user)
+    "modify" -> cli (Ok (update username age))
+    _ -> putStrLn "Cette commande n'existe pas !" >> cli (Ok user)
 
 update :: String -> Integer -> User
 update name age = User { name = name, age = age }
