@@ -1,53 +1,42 @@
-{-#LANGUAGE ScopedTypeVariables#-}
-import Tree
-import Complex.Quaternion
-import Monoids.Addition
-import Monoids.Product
-import Control.Monad (unless)
-import Semigroups.AntiCommutative
+{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving #-}
+import Control.Monad.Except
+import Control.Applicative
 import Control.Monad.State.Lazy
-import System.Environment
-import System.IO
-import Optional
+import Data.Char
 
-data User = User { name :: String, age :: Integer }
+data Types = LParen | RParen | Word String | Text String | Number Double
   deriving (Show, Eq)
 
-input :: String -> IO String
-input str = do
-  putStr str
-  hFlush stdout
-  getLine
+isChar :: String -> Bool
+isChar str = all (\x -> x `elem` (['a'..'z'] ++ ['A'..'Z'])) str
 
-split :: Char -> String -> [String]
-split d [] = []
-split d s = x : split d (drop 1 y)
-  where (x,y) = span (/= d) s
+string :: [Char] -> ([Char], [Char])
+string xs = span (/= '"') xs
 
-cli :: Optional User -> IO()
-cli Undefined = do
-  putStrLn "Création de l'utilisateur..."
-  username :: String <- input "Nom d'utilisateur: "
-  age :: Integer <- read <$> input "Age: "
-  cli (Ok User { name = username, age = age })
+word :: [Char] -> ([Char], [Char])
+word xs = span (\x -> x /= ' ' && isChar [x]) xs
 
-cli (Ok user) = do
-  res <- input ">>> "
-  let command = takeWhile (/= ' ') res
-  let args = drop 1 $ dropWhile (/= ' ') res
-  let (username, age) = let [username, age] = split ' ' args in (username, read age :: Integer)
+number :: [Char] -> ([Char], [Char])
+number xs = span (\x -> (isDigit x || x == '.') && x /= ' ') xs
 
-  case command of
-    "welcome" -> welcome user >> cli (Ok user)
-    "modify" -> cli (Ok (update username age))
-    _ -> putStrLn "Cette commande n'existe pas !" >> cli (Ok user)
+lexer :: String -> [Types]
+lexer [] = []
+lexer (x:xs)
+  | x == '(' = LParen : lexer xs
+  | x == ')' = RParen : lexer xs
+  | x == '"' = Text str1 : lexer (drop 1 str2)
+  | isDigit x = Number (read num1 :: Double) : lexer num2
+  | isChar [x] = Word w1 : lexer w2
+  | x == ' ' = lexer xs
+  | otherwise = Word [x] : lexer xs
 
-update :: String -> Integer -> User
-update name age = User { name = name, age = age }
+  where _word = [x] ++ xs
+        (w1,w2) = word _word
+        (str1,str2) = string xs
+        (num1,num2) = number _word
 
-welcome :: User -> IO()
-welcome user = putStrLn $ "Bonjour " ++ name user ++ ", vous avez " ++ show (age user) ++ " ans."
-
-main :: IO()
-main = cli Undefined
+main :: IO ()
+main = do
+  let tokens = lexer "(print test (bruh))"
+  print $ tokens
 
