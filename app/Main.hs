@@ -1,7 +1,6 @@
-{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving #-}
+{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FunctionalDependencies #-}
 import Control.Monad.Except
 import Control.Applicative
-import Control.Monad.State.Lazy
 import Data.Char
 
 data Types = LParen | RParen | Word String | Text String | Number Double
@@ -35,8 +34,18 @@ lexer (x:xs)
         (str1,str2) = string xs
         (num1,num2) = number _word
 
+type ParseError = String
+newtype Parser a = Parser (String -> (Either [ParseError] a, String))
+
+instance Functor Parser where
+  fmap f (Parser something) = Parser (\s -> let (eit, str) = something s in (f <$> eit, str))
+
+instance Applicative Parser where
+  pure f = Parser (\s -> (Right f, s))
+  (Parser a) <*> (Parser b) = Parser (\s -> let (eit, str) = a s in (let (fs, sn) = b str in (eit <*> fs, sn)))
+
+
 main :: IO ()
 main = do
-  let tokens = lexer "(print test (bruh))"
-  print $ tokens
-
+  let (fs, sn) = runMutable (test) 5
+  print fs
