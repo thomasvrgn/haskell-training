@@ -44,6 +44,8 @@ instance Applicative Parser where
   pure f = Parser (\s -> (Right f, s))
   (Parser a) <*> (Parser b) = Parser (\s -> let (eit, str) = a s in (let (fs, sn) = b str in (eit <*> fs, sn)))
 
+newtype Mutable s a = Mutable { runMutable :: s -> (a, s) }
+
 
 main :: IO ()
 main = do
