@@ -46,6 +46,26 @@ instance Applicative Parser where
 
 newtype Mutable s a = Mutable { runMutable :: s -> (a, s) }
 
+instance Functor (Mutable a) where
+  fmap f (Mutable m) = Mutable (\s -> let (s1, s2) = m s in (f s1, s2))
+
+instance Applicative (Mutable a) where
+  (Mutable a) <*> (Mutable b) = Mutable (\s ->
+    let (fn, s1) = a s
+        (s2, s3) = b s1
+      in (fn s2, s3))
+
+  pure a = Mutable (\s -> (a, s))
+
+instance Monad (Mutable a) where
+  (Mutable a) >>= f =
+    Mutable (\s ->
+      let (s0, s1) = a s
+          Mutable s2 = f s0
+        in s2 s1)
+
+get :: Mutable s s
+get = Mutable (\s -> (s, s))
 
 main :: IO ()
 main = do
