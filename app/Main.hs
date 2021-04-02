@@ -67,7 +67,14 @@ instance Monad (Mutable a) where
 get :: Mutable s s
 get = Mutable (\s -> (s, s))
 
+while :: (Monad m) => Bool -> m () -> m ()
+while cond action = do
+  if cond
+    then action >> while cond action
+    else return ()
+
 main :: IO ()
 main = do
-  let (fs, sn) = runMutable (test) 5
-  print fs
+  let x = 4
+  print "test"
+  while (1 /= 1) (print "test")
