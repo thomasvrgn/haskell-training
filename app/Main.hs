@@ -34,16 +34,6 @@ lexer (x:xs)
         (str1,str2) = string xs
         (num1,num2) = number _word
 
-type ParseError = String
-newtype Parser a = Parser (String -> (Either [ParseError] a, String))
-
-instance Functor Parser where
-  fmap f (Parser something) = Parser (\s -> let (eit, str) = something s in (f <$> eit, str))
-
-instance Applicative Parser where
-  pure f = Parser (\s -> (Right f, s))
-  (Parser a) <*> (Parser b) = Parser (\s -> let (eit, str) = a s in (let (fs, sn) = b str in (eit <*> fs, sn)))
-
 newtype Mutable s a = Mutable { runMutable :: s -> (a, s) }
 
 instance Functor (Mutable a) where
@@ -67,14 +57,68 @@ instance Monad (Mutable a) where
 get :: Mutable s s
 get = Mutable (\s -> (s, s))
 
-while :: (Monad m) => Bool -> m () -> m ()
-while cond action = do
-  if cond
-    then action >> while cond action
-    else return ()
+if' :: Bool -> a -> a -> a
+if' True x _ = x
+if' False _ x = x
+
+eq :: (Eq a) => a -> a -> Bool
+eq x y = if' (x == y) True False
+
+exec :: Monad m => [m ()] -> m ()
+exec [] = return ()
+exec (x:xs) = x >> exec xs
+
+for :: Monad m => [a] -> (a -> m ()) -> m ()
+for [] action = return ()
+for (x:xs) action = action x >> for xs action
+
+len :: [a] -> Integer
+len [] = 0
+len (x:xs) = 1 + len xs
+
+index :: (Eq a) => [a] -> a -> Integer
+index (x:xs) item | x == item = 0
+                  | otherwise = 1 + index xs item
+
+data Expression
+  = ECall [Expression]
+  | EString String
+  | EInteger Integer
+  | EWord String
+  deriving (Show)
+
+type ParseError = String
+newtype Parser a = Parser (String -> (Either [ParseError] a, String))
+
+instance Functor Parser where
+  fmap f (Parser something) = Parser (\s -> let (eit, str) = something s in (f <$> eit, str))
+
+instance Applicative Parser where
+  pure f = Parser (\s -> (Right f, s))
+  (Parser a) <*> (Parser b) = Parser (\s -> let (eit, str) = a s in (let (fs, sn) = b str in (eit <*> fs, sn)))
+
+instance Alternative Parser where
+  empty = Parser (\s -> (Left [], s))
+  (Parser a) <|> (Parser b) = Parser (\s ->
+    let (a', s0) = a s
+        (b', s1) = b s0
+      in case a' of
+        (Left _) -> (b', s1)
+        (Right a) -> (a', s0))
+
+instance Monad Parser where
+  return a = Parser (\s -> (Right a, s))
+  (Parser a) >>= f =
+    Parser (\s ->
+      let (a', s') = a s
+        in case a' of
+          Left e -> (Left e, s')
+          Right x -> let Parser b = f x in b s')
+
 
 main :: IO ()
 main = do
-  let x = 4
   print "test"
-  while (1 /= 1) (print "test")
+  for [1..3] (\x -> print "tes")
+  print $ len [1..10]
+  print $ index [1..10] 2
