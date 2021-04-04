@@ -115,6 +115,11 @@ instance Monad Parser where
           Left e -> (Left e, s')
           Right x -> let Parser b = f x in b s')
 
+manyTill :: Parser a -> Parser end -> Parser [a]
+manyTill a end = do
+  do { _ <- end; return [] }
+  <|>
+  do { x <- a; xs <- manyTill (return x) end; return (x:xs) }
 
 main :: IO ()
 main = do
