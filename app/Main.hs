@@ -1,40 +1,41 @@
-{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FunctionalDependencies #-}
+{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FunctionalDependencies, BlockArguments #-}
 import Control.Monad.Except
 import Control.Applicative
 import Data.Char
 import Data.Functor
+import Data.List
 
-data Types = LParen | RParen | Word String | Text String | Number Double
-  deriving (Show, Eq)
-
-isChar :: String -> Bool
-isChar str = all (\x -> x `elem` (['a'..'z'] ++ ['A'..'Z'])) str
-
-string :: [Char] -> ([Char], [Char])
-string xs = span (/= '"') xs
-
-word :: [Char] -> ([Char], [Char])
-word xs = span (\x -> x /= ' ' && isChar [x]) xs
-
-number :: [Char] -> ([Char], [Char])
-number xs = span (\x -> (isDigit x || x == '.') && x /= ' ') xs
-
-lexer :: String -> [Types]
-lexer [] = []
-lexer (x:xs)
-  | x == '(' = LParen : lexer xs
-  | x == ')' = RParen : lexer xs
-  | x == '"' = Text str1 : lexer (drop 1 str2)
-  | isDigit x = Number (read num1 :: Double) : lexer num2
-  | isChar [x] = Word w1 : lexer w2
-  | x == ' ' = lexer xs
-  | otherwise = Word [x] : lexer xs
-
-  where _word = [x] ++ xs
-        (w1,w2) = word _word
-        (str1,str2) = string xs
-        (num1,num2) = number _word
-
+--data Types = LParen | RParen | Word String | Text String | Number Double
+--  deriving (Show, Eq)
+--
+--isChar :: String -> Bool
+--isChar str = all (\x -> x `elem` (['a'..'z'] ++ ['A'..'Z'])) str
+--
+--string :: [Char] -> ([Char], [Char])
+--string xs = span (/= '"') xs
+--
+--word :: [Char] -> ([Char], [Char])
+--word xs = span (\x -> x /= ' ' && isChar [x]) xs
+--
+--number :: [Char] -> ([Char], [Char])
+--number xs = span (\x -> (isDigit x || x == '.') && x /= ' ') xs
+--
+--lexer :: String -> [Types]
+--lexer [] = []
+--lexer (x:xs)
+--  | x == '(' = LParen : lexer xs
+--  | x == ')' = RParen : lexer xs
+--  | x == '"' = Text str1 : lexer (drop 1 str2)
+--  | isDigit x = Number (read num1 :: Double) : lexer num2
+--  | isChar [x] = Word w1 : lexer w2
+--  | x == ' ' = lexer xs
+--  | otherwise = Word [x] : lexer xs
+--
+--  where _word = [x] ++ xs
+--        (w1,w2) = word _word
+--        (str1,str2) = string xs
+--        (num1,num2) = number _word
+--
 newtype Mutable s a = Mutable { runMutable :: s -> (a, s) }
 
 instance Functor (Mutable a) where
@@ -116,11 +117,45 @@ instance Monad Parser where
           Left e -> (Left e, s')
           Right x -> let Parser b = f x in b s')
 
+--x throw :: ParseError -> Parser a
+--try :: Parser a -> Parser a
+--x satisfy :: (Char -> Bool) -> Parser Char
+--x char :: Char -> Parser ()
+--x string :: String -> Parser ()
+--eof :: Parser ()
+--between :: Parser left -> Parser right -> Parser a -> Parser a
+--parens :: Parser a -> Parser a
+--sepBy :: Parser a -> Parser sep -> Parser [a]
+
+throw :: ParseError -> Parser a
+throw err = Parser \s -> (Left [err], s)
+
 manyTill :: Parser a -> Parser end -> Parser [a]
 manyTill a end =
   end $> []
   <|>
   ((:) <$> a <*> manyTill a end)
+
+satisfy :: (Char -> Bool) -> Parser Char
+satisfy f = Parser \s -> case s of
+  [] -> (Left ["Unexpected EOF"], s)
+  (x:xs) -> if f x then (Right x, xs) else (Left ["Unexpected character"], s)
+
+char :: Char -> Parser Char
+char c = satisfy (==c)
+
+anyChar :: Parser Char
+anyChar = satisfy (const True)
+
+stringLiteral :: Parser String
+stringLiteral = do
+  char '"'
+  manyTill anyChar (char '"')
+
+string :: String -> Parser ()
+string str = Parser \s -> case stripPrefix str s of
+  Just x -> (Right (), x)
+  Nothing -> (Left ["Expected " ++ show str], s)
 
 main :: IO ()
 main = do
