@@ -124,7 +124,7 @@ instance Monad Parser where
 --x string :: String -> Parser ()
 --x eof :: Parser ()
 --x between :: Parser left -> Parser right -> Parser a -> Parser a
---parens :: Parser a -> Parser a
+--x parens :: Parser a -> Parser a
 --sepBy :: Parser a -> Parser sep -> Parser [a]
 
 eof :: Parser ()
@@ -132,12 +132,21 @@ eof = Parser \case
   [] -> (Right (), [])
   s -> (Left ["Not EOF"], s)
 
+sepBy :: Parser a -> Parser sep -> Parser [a]
+sepBy a sep = do
+  x <- a
+  xs <- manyTill (sep >> a) (sepBy a sep)
+  return (x:xs)
+
 between :: Parser left -> Parser right -> Parser a -> Parser a
 between left right a = do
   _ <- left
   x <- a
   _ <- right
   return x
+
+parens :: Parser a -> Parser a
+parens = between (char '(') (char ')')
 
 try :: Parser a -> Parser a
 try (Parser p) = Parser \s -> case p s of
@@ -175,8 +184,4 @@ string str = Parser \s -> case stripPrefix str s of
   Nothing -> (Left ["Expected " ++ show str], s)
 
 main :: IO ()
-main = do
-  print "test"
-  for [1..3] (\x -> print "tes")
-  print $ len [1..10]
-  print $ index [1..10] 2
+main = print "test"
