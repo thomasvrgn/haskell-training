@@ -118,7 +118,7 @@ instance Monad Parser where
           Right x -> let Parser b = f x in b s')
 
 --x throw :: ParseError -> Parser a
---try :: Parser a -> Parser a
+--x try :: Parser a -> Parser a
 --x satisfy :: (Char -> Bool) -> Parser Char
 --x char :: Char -> Parser ()
 --x string :: String -> Parser ()
@@ -126,6 +126,16 @@ instance Monad Parser where
 --between :: Parser left -> Parser right -> Parser a -> Parser a
 --parens :: Parser a -> Parser a
 --sepBy :: Parser a -> Parser sep -> Parser [a]
+
+eof :: Parser ()
+eof = Parser \s -> if length s == 0
+  then (Right (), s)
+  else (Left ["Not EOF"], s)
+
+try :: Parser a -> Parser a
+try (Parser p) = Parser \s -> case p s of
+  (Left err, _) -> (Left err, s)
+  (Right x, s') -> (Right x, s')
 
 throw :: ParseError -> Parser a
 throw err = Parser \s -> (Left [err], s)
