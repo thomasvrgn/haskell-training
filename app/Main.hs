@@ -1,4 +1,4 @@
-{-#LANGUAGE ScopedTypeVariables, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FunctionalDependencies, BlockArguments #-}
+{-#LANGUAGE ScopedTypeVariables, LambdaCase, GeneralizedNewtypeDeriving, MultiParamTypeClasses, FunctionalDependencies, BlockArguments #-}
 import Control.Monad.Except
 import Control.Applicative
 import Data.Char
@@ -122,15 +122,22 @@ instance Monad Parser where
 --x satisfy :: (Char -> Bool) -> Parser Char
 --x char :: Char -> Parser ()
 --x string :: String -> Parser ()
---eof :: Parser ()
---between :: Parser left -> Parser right -> Parser a -> Parser a
+--x eof :: Parser ()
+--x between :: Parser left -> Parser right -> Parser a -> Parser a
 --parens :: Parser a -> Parser a
 --sepBy :: Parser a -> Parser sep -> Parser [a]
 
 eof :: Parser ()
-eof = Parser \s -> if length s == 0
-  then (Right (), s)
-  else (Left ["Not EOF"], s)
+eof = Parser \case
+  [] -> (Right (), [])
+  s -> (Left ["Not EOF"], s)
+
+between :: Parser left -> Parser right -> Parser a -> Parser a
+between left right a = do
+  _ <- left
+  x <- a
+  _ <- right
+  return x
 
 try :: Parser a -> Parser a
 try (Parser p) = Parser \s -> case p s of
