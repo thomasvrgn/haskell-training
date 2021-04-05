@@ -2,6 +2,7 @@
 import Control.Monad.Except
 import Control.Applicative
 import Data.Char
+import Data.Functor
 
 data Types = LParen | RParen | Word String | Text String | Number Double
   deriving (Show, Eq)
@@ -116,10 +117,10 @@ instance Monad Parser where
           Right x -> let Parser b = f x in b s')
 
 manyTill :: Parser a -> Parser end -> Parser [a]
-manyTill a end = do
-  do { _ <- end; return [] }
+manyTill a end =
+  end $> []
   <|>
-  do { x <- a; xs <- manyTill (return x) end; return (x:xs) }
+  ((:) <$> a <*> manyTill a end)
 
 main :: IO ()
 main = do
