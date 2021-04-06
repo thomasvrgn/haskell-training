@@ -36,6 +36,7 @@ library
       Optional
       Semigroups.AntiCommutative
       Mutable
+      Parser
       Tree
   other-modules:
       Paths_haskell_training
@@ -44,6 +45,7 @@ library
   build-depends:
       base >=4.7 && <5
     , numeric-prelude
+    , mtl
   default-language: Haskell2010
 
 executable haskell-training-exe
