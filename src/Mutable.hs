@@ -1,2 +1,2 @@
 module Mutable where
-  newtype Mutable s a = { runState :: s -> (a, s) }
+  newtype Mutable s a = Mutable { runState :: s -> (a, s) }
