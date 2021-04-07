@@ -27,6 +27,12 @@ module Mutable where
     get :: m s
     put :: s -> m ()
 
+  getResult :: Mutable s a -> s -> a
+  getResult f s = fst $ runMutable f s
+
+  getMutable :: Mutable s a -> s -> s
+  getMutable f s = snd $ runMutable f s
+
   instance MutableOperations s (Mutable s) where
     get = Mutable \s -> (s, s)
     put s = Mutable \_ -> ((), s)
