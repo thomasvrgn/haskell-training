@@ -1,6 +1,6 @@
-{-# LANGUAGE BlockArguments #-}
+{-# LANGUAGE BlockArguments, MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances #-}
 module Mutable where
-  newtype Mutable s a = Mutable { runState :: s -> (a, s) }
+  newtype Mutable s a = Mutable { runMutable :: s -> (a, s) }
 
   -- We don't want to change state output but only the result
   instance Functor (Mutable s) where
@@ -21,5 +21,12 @@ module Mutable where
 
     (Mutable mut) >>= f = Mutable \s ->
       let (a, s') = mut s
-          Mutable f' = f a
-        in f' s'
+        in runMutable (f a) s'
+
+  class Monad m => MutableOperations s m where
+    get :: m s
+    put :: s -> m ()
+
+  instance MutableOperations s (Mutable s) where
+    get = Mutable \s -> (s, s)
+    put s = Mutable \_ -> ((), s)
