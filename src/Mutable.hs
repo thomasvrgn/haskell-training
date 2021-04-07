@@ -15,3 +15,11 @@ module Mutable where
       let (f, s') = mutf s
           (a, b) = mut s'
         in (f a, b)
+
+  instance Monad (Mutable s) where
+    return = pure
+
+    (Mutable mut) >>= f = Mutable \s ->
+      let (a, s') = mut s
+          Mutable f' = f a
+        in f' s'
