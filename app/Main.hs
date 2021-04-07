@@ -1,5 +1,6 @@
 {-# LANGUAGE BlockArguments, LambdaCase #-}
 module Main where
+  import Data.List
   import Mutable
 
   popLast :: [a] -> [a]
@@ -29,10 +30,13 @@ module Main where
   stackTest :: String -> Mutable Stack ()
   stackTest user = do
     push user
-    unshift "Hello"
+    unshift "Bonjour"
     push "!"
+
+  makeSentence :: [String] -> String
+  makeSentence xs = concat . intersperse " " $ xs
 
   main :: IO()
   main = do
-    let mutTest = runMutable (stackTest "Thomas") empty
-    print $ mutTest
+    let mutTest = getMutable (stackTest "Thomas") empty
+    putStrLn $ makeSentence mutTest
