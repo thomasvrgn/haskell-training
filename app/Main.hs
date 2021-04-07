@@ -10,8 +10,8 @@ module Main where
   empty :: Stack
   empty = []
 
-  unshift :: Mutable Stack String
-  unshift = Mutable \case
+  shift :: Mutable Stack String
+  shift = Mutable \case
     [] -> ("", [])
     (x:xs) -> (x, xs)
 
@@ -23,10 +23,14 @@ module Main where
   push :: String -> Mutable Stack ()
   push str = Mutable \s -> ((), s ++ [str])
 
+  unshift :: String -> Mutable Stack ()
+  unshift str = Mutable \s -> ((), str:s)
+
   stackTest :: String -> Mutable Stack ()
   stackTest user = do
-    push "Hello"
     push user
+    unshift "Hello"
+    push "!"
 
   main :: IO()
   main = do
