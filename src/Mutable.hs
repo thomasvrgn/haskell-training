@@ -23,9 +23,7 @@ module Mutable where
       let (a, s') = mut s
         in runMutable (f a) s'
 
-  class Monad m => MutableOperations s m where
-    get :: m s
-    put :: s -> m ()
+  -- Simply running the State and getting the corresponding output
 
   getResult :: Mutable s a -> s -> a
   getResult f s = fst $ runMutable f s
@@ -33,6 +31,13 @@ module Mutable where
   getMutable :: Mutable s a -> s -> s
   getMutable f s = snd $ runMutable f s
 
-  instance MutableOperations s (Mutable s) where
+  -- Class for mutable with s State type
+  class MutableOperations s where
+    get :: Mutable s s
     get = Mutable \s -> (s, s)
-    put s = Mutable \_ -> ((), s)
+
+    put :: s -> Mutable s ()
+    put s = Mutable \_ -> ((), s) -- Put returns anything
+
+  -- Default MutableOperations instance for Mutable do not require to reimplement all methods
+  instance MutableOperations (Mutable s s)
