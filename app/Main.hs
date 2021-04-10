@@ -4,49 +4,34 @@ module Main where
   import Mutable
   import Optional
 
-  popLast :: [a] -> [a]
-  popLast xs = take ((length xs) - 1) xs
+  data Expr
+    = Call [Expr]
+    | Num Integer
+    | Str String
+    | Var String
+    deriving (Show, Eq)
 
   type Stack = [String]
 
-  empty :: Stack
-  empty = []
+  ePrint :: IO (Optional Expr) -> IO (Optional Expr)
+  ePrint s = do
+    wrap <- s
+    let elem = getOk wrap
+    case elem of
+      (Num a) -> putStr . show $ a
+      (Str a) -> putStr a
+    putStr " "
+    return wrap
 
-  shift :: Mutable Stack String
-  shift = Mutable \case
-    [] -> ("", [])
-    (x:xs) -> (x, xs)
+  eval :: Expr -> IO (Optional Expr)
+  eval (Call (x:xs))
+    | x == Var "print" = do
+      let elements = map eval xs
+      mapM (ePrint) elements >> putStr "\n"
+      return Undefined
 
-  pop :: Mutable Stack String
-  pop = Mutable \case
-    [] -> ("", [])
-    xs -> (last xs, popLast xs)
+  eval x@(Num a) = return $ Ok x
+  eval x@(Str a) = return $ Ok x
 
-  push :: String -> Mutable Stack ()
-  push str = Mutable \s -> ((), s ++ [str])
-
-  unshift :: String -> Mutable Stack ()
-  unshift str = Mutable \s -> ((), str:s)
-
-  stackTest :: String -> Mutable Stack ()
-  stackTest user = do
-    push user
-    unshift "Bonjour"
-    push "!"
-
-  makeSentence :: [String] -> String
-  makeSentence xs = concat . intersperse " " $ xs
-
-  factorial :: (Num a, Enum a, Eq a) => a -> a
-  factorial 0 = 1
-  factorial n = product [1..n]
-
-  neper :: (Num a, Enum a, Eq a, Fractional a) => Optional a -> a
-  neper (Ok n) = foldl (\x acc -> x + (1 / factorial acc)) 1 [1..n]
-  neper Undefined = neper (Ok 20)
-
-  main :: IO()
-  main = do
-    let mutTest = getMutable (stackTest "Thomas") empty
-    putStrLn $ makeSentence mutTest
-    print $ neper Undefined
+  main :: IO (Optional Expr)
+  main = eval $ Call [Var "print", Str "Hello", Num 4]
