@@ -5,6 +5,7 @@ dist-newstyle
 # Idea folders and files
 *.iml
 .idea
+.vscode
 
 # Haskell output
 Main
