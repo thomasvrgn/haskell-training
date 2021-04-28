@@ -1,37 +1,12 @@
 {-# LANGUAGE BlockArguments, LambdaCase #-}
 module Main where
-  import Data.List
-  import Mutable
-  import Optional
+  prod :: Applicative f => f a -> f b -> f (a, b)
+  prod a b = (,) <$> a <*> b
 
-  data Expr
-    = Call [Expr]
-    | Num Integer
-    | Str String
-    | Var String
-    deriving (Show, Eq)
+  app :: Applicative f => f (a -> b) -> f a -> f b
+  app f x = fmap (\(f', x') -> f' x') (prod f x)
 
-  type Stack = [String]
+  test = \s -> Just s
 
-  ePrint :: IO (Optional Expr) -> IO (Optional Expr)
-  ePrint s = do
-    wrap <- s
-    let elem = getOk wrap
-    case elem of
-      (Num a) -> putStr . show $ a
-      (Str a) -> putStr a
-    putStr " "
-    return wrap
-
-  eval :: Expr -> IO (Optional Expr)
-  eval (Call (x:xs))
-    | x == Var "print" = do
-      let elements = map eval xs
-      mapM (ePrint) elements >> putStr "\n"
-      return Undefined
-
-  eval x@(Num a) = return $ Ok x
-  eval x@(Str a) = return $ Ok x
-
-  main :: IO (Optional Expr)
-  main = eval $ Call [Var "print", Str "Hello", Num 4]
+  main :: IO ()
+  main = print $ app (Just (+5)) (Just 2)
